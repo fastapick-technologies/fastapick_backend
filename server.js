@@ -12,13 +12,8 @@ const { saveOtp, verifyOtp } = require("./otp_store");
 const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
-app.use(
-  cors({
-    origin: "http://localhost:8081", // Expo web dev server
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
-  })
-);
+app.use(cors({ origin: "*" }));
+
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -33,7 +28,7 @@ app.post("/send-otp", async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: "Email required" });
 
-  const otp = crypto.randomInt(100000, 999999).toString();
+  const otp = crypto.randomInt(10000, 99999).toString();
   saveOtp(email, otp);
 
   try {
@@ -63,4 +58,7 @@ app.post("/verify-otp", (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, "0.0.0.0", () =>
+  console.log(`Server running on http://192.168.0.105:${PORT}`)
+);
+
